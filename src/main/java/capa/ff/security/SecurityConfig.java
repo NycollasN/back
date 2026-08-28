@@ -1,5 +1,6 @@
 package capa.ff.security;
 
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -34,7 +35,16 @@ public class SecurityConfig {
     ) throws Exception {
 
         http
-                .csrf(csrf -> csrf.disable())
+                // Desabilita CSRF, mas garante exceção para o H2 não quebrar nas requisições do console
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers(PathRequest.toH2Console())
+                        .disable()
+                )
+
+                // Permite a exibição dos Frames da interface do H2
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.sameOrigin())
+                )
 
                 .cors(cors -> {})
 
@@ -45,6 +55,10 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
+
+                        // 1. LIBERA O CONSOLE DO H2
+                        .requestMatchers(PathRequest.toH2Console()).permitAll()
+                        .requestMatchers("/h2-console/**").permitAll()
 
                         // Permite requisições OPTIONS do CORS
                         .requestMatchers(
