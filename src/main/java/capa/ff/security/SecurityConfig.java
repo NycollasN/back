@@ -70,8 +70,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        // Permite todas as origens (Vercel, Localhost, etc)
         configuration.setAllowedOriginPatterns(List.of("*"));
+        // Permite todos os métodos HTTP (inclusive OPTIONS do preflight)
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        // Permite todos os cabeçalhos (Authorization, Content-Type, etc)
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
